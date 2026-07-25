@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Expense &amp; Budget Visualizer</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="app-header">
+    <h1>Expense &amp; Budget Visualizer</h1>
+    <button id="theme-toggle" class="btn-icon" aria-label="Toggle dark/light mode" title="Toggle dark/light mode">
+      <span id="theme-icon">🌙</span>
+    </button>
+  </header>
+
+  <main class="container">
+
+    <!-- Total Balance -->
+    <section class="card balance-card" aria-label="Total Balance">
+      <p class="balance-label">TOTAL BALANCE</p>
+      <p class="balance-amount" id="total-balance">Rp 0</p>
+    </section>
+
+    <!-- Spending Limit Alert -->
+    <div id="limit-alert" class="limit-alert hidden" role="alert" aria-live="polite">
+      ⚠️ Warning: You have exceeded your spending limit of <span id="limit-display"></span>!
+    </div>
+
+    <!-- Add Transaction Form -->
+    <section class="card" aria-label="Add Transaction">
+      <h2>Add Transaction</h2>
+      <form id="transaction-form" novalidate>
+
+        <div class="form-group">
+          <label for="item-name">Item Name</label>
+          <input
+            type="text"
+            id="item-name"
+            placeholder="e.g. Coffee"
+            autocomplete="off"
+            required
+          />
+          <span class="error-msg" id="error-name" aria-live="polite"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="amount">Amount (Rp)</label>
+          <input
+            type="number"
+            id="amount"
+            placeholder="e.g. 15000"
+            min="0"
+            step="any"
+            required
+          />
+          <span class="error-msg" id="error-amount" aria-live="polite"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="category">Category</label>
+          <div class="category-row">
+            <select id="category" required>
+              <option value="">-- Select Category --</option>
+              <option value="Food">Food</option>
+              <option value="Transport">Transport</option>
+              <option value="Fun">Fun</option>
+              <!-- custom categories appended here by JS -->
+            </select>
+            <button type="button" id="add-category-btn" class="btn-secondary" title="Add custom category">
+              + Custom
+            </button>
+          </div>
+          <span class="error-msg" id="error-category" aria-live="polite"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="spending-limit">Spending Limit (Rp) <span class="optional">(optional)</span></label>
+          <input
+            type="number"
+            id="spending-limit"
+            placeholder="e.g. 500000"
+            min="0"
+            step="any"
+          />
+        </div>
+
+        <button type="submit" class="btn-primary btn-full">Add Transaction</button>
+      </form>
+    </section>
+
+    <!-- Monthly Summary -->
+    <section class="card" aria-label="Monthly Summary">
+      <div class="section-header">
+        <h2>Monthly Summary</h2>
+        <div class="month-nav" aria-label="Month navigation">
+          <button id="prev-month" class="btn-icon" aria-label="Previous month">&#8592;</button>
+          <span id="current-month-label" class="month-label"></span>
+          <button id="next-month" class="btn-icon" aria-label="Next month">&#8594;</button>
+        </div>
+      </div>
+      <p class="monthly-total">Total spent: <strong id="monthly-total-amount">Rp 0</strong></p>
+    </section>
+
+    <!-- Bottom Grid: Transactions + Chart -->
+    <div class="bottom-grid">
+
+      <!-- Transaction List -->
+      <section class="card transactions-card" aria-label="Transactions">
+        <div class="section-header">
+          <h2>Transactions</h2>
+          <div class="sort-controls">
+            <label for="sort-select" class="sr-only">Sort by</label>
+            <select id="sort-select" aria-label="Sort transactions">
+              <option value="date-desc">Newest first</option>
+              <option value="date-asc">Oldest first</option>
+              <option value="amount-desc">Amount ↓</option>
+              <option value="amount-asc">Amount ↑</option>
+              <option value="category">Category</option>
+            </select>
+          </div>
+        </div>
+
+        <ul id="transaction-list" class="transaction-list" aria-live="polite" aria-label="Transaction list">
+          <!-- Items rendered by JS -->
+        </ul>
+        <p id="no-transactions" class="empty-state">No transactions yet. Add one above!</p>
+      </section>
+
+      <!-- Pie Chart -->
+      <section class="card chart-card" aria-label="Spending by Category">
+        <h2>Spending by Category</h2>
+        <div class="chart-wrapper">
+          <canvas id="spending-chart" aria-label="Pie chart of spending by category" role="img"></canvas>
+        </div>
+        <p id="no-chart-data" class="empty-state">Add transactions to see chart.</p>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Custom Category Modal -->
+  <div id="custom-category-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal">
+      <h3 id="modal-title">Add Custom Category</h3>
+      <div class="form-group">
+        <label for="custom-category-input">Category Name</label>
+        <input type="text" id="custom-category-input" placeholder="e.g. Healthcare" maxlength="30" />
+        <span class="error-msg" id="error-custom-category" aria-live="polite"></span>
+      </div>
+      <div class="modal-actions">
+        <button id="modal-cancel" class="btn-secondary">Cancel</button>
+        <button id="modal-confirm" class="btn-primary">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
